@@ -468,7 +468,7 @@ int Commander::custom_command(int argc, char *argv[])
 			const float heading_accuracy = NAN;
 
 			bool ret = send_vehicle_command(vehicle_command_s::VEHICLE_CMD_EXTERNAL_ATTITUDE_ESTIMATE,
-							0.f, 0.f, heading, 0.f, 0.f, 0.f, heading_accuracy);
+							0.f, 0.f, heading, 0.f, 0.0, 0.0, heading_accuracy);
 			return (ret ? 0 : 1);
 
 		} else {
@@ -1790,7 +1790,7 @@ void Commander::run()
 		_power_button_state_sub.copy(&button_state);
 
 		tune_control_s tune_control{};
-		button_state.timestamp = hrt_absolute_time();
+		tune_control.timestamp = hrt_absolute_time();
 		tune_control_pub = orb_advertise(ORB_ID(tune_control), &tune_control);
 	}
 
@@ -1956,6 +1956,7 @@ void Commander::run()
 			fd_status.fd_motor = _failure_detector.getStatusFlags().motor;
 			fd_status.imbalanced_prop_metric = _failure_detector.getImbalancedPropMetric();
 			fd_status.motor_failure_mask = _failure_detector.getMotorFailures();
+			fd_status.motor_stop_mask = _failure_detector.getMotorStopMask();
 			fd_status.timestamp = hrt_absolute_time();
 			_failure_detector_status_pub.publish(fd_status);
 		}
